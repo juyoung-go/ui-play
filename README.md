@@ -1,4 +1,4 @@
-# test-paging-ui
+# ui-play
 
 ## Project setup
 ```
