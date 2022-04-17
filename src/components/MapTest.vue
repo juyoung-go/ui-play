@@ -77,7 +77,7 @@ export default {
       //오버레이 캔버스 생성
       this.can = document.createElement('canvas');
       this.can.style.position = 'fixed';
-      this.can.style.border = '1px solid red'
+      //this.can.style.border = '1px solid red'
       this.can.style.width = 'calc(100% - 200px)'
       this.can.style.height = '600px'
       this.can.style.left = this.$refs.root.offsetLeft+'px'
@@ -99,28 +99,64 @@ export default {
       this.refreshMarkerData()
       
       //지도 이벤트
-      let isMoving = false
       const self = this
+      self.isMoving = false
       naver.maps.Event.addListener(this.map, 'mousedown', function() {
-        isMoving = true
+        self.isMoving = true
+      });
+
+      naver.maps.Event.addListener(this.map, 'mousemove', function() {
+        if(!self.isMoving){
+          return
+        }
       });
       
       naver.maps.Event.addListener(this.map, 'mouseup', function() {
-        if(!isMoving){
-          return
-        }
-        isMoving = false
-        self.drawMarker()
+        
       });
+
+      window.addEventListener('mousedown', self.mousedown)
+      window.addEventListener('mousemove', self.mousemove)
+      window.addEventListener('mouseup', self.mouseup)
       
+    },
+    mousedown(e){
+      if(!this.isMoving){
+        return
+      }
+      console.log('down',e);
+    },
+    mousemove(e){
+
+      if(!this.isMoving){
+        return
+      }
+
+      console.log('move', e)
+      
+      this.clearMarker()
+      
+      // this.ctx.translate(e.movementX, e.movementY)
+      
+      this.drawMarker2(e.offsetX, e.offsetY)
+
+    },
+    mouseup(e){
+      if(!this.isMoving){
+        return
+      }
+      console.log('up', e);
+      this.isMoving = false
     },
     refreshMarkerData(){
 
       this.markerData.length = 0
+      
       for(let i = 0 ; i < Number(this.cnt) ; i++){
         
         this.markerData.push({
-            x:this.x + Number(this.type()+this.ran()), y:this.y + Number(this.type()+this.ran())
+            x:this.x + Number(this.type()+this.ran()), y:this.y + Number(this.type()+this.ran()),
+            cx:Number(Math.random()*this.can.width), cy:Number(Math.random()*this.can.height),
         });
 
       }
@@ -152,16 +188,16 @@ export default {
 
     },
 
-    async drawMarker2(){
+    async drawMarker2(marginx, marginy){
 
-      const cnt = this.cnt
-      
-      for(let i = 0 ; i < Number(cnt) ; i++){
-        
+      console.log(marginx, marginy)
+
+      for(let marker of this.markerData){
+
         this.ctx.drawImage(
             this.markerImg, 
-            Number(Math.random()*this.can.width),
-            Number(Math.random()*this.can.height),
+            marker.cx + (marginx!=undefined?marginx:0),
+            marker.cy + (marginy!=undefined?marginy:0),
         );
 
       }
@@ -169,7 +205,7 @@ export default {
     },
 
     clearMarker(){
-      this.ctx.clearRect(0, 0, this.can.width, this.can.height)
+      this.ctx.clearRect(-1*this.can.width, -1*this.can.height, this.can.width*3, this.can.height*3)
       for(let mark of list){
         mark.setMap(null)
       }
