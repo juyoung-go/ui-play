@@ -38,7 +38,7 @@ export default {
       mode:'canvas',
 
       //마커 수
-      cnt:0,
+      cnt:100,
 
       //기본 좌표
       x:37.3595704,
@@ -55,6 +55,8 @@ export default {
 
     const self = this
     setTimeout(async ()=>{
+
+      this.naver = window.naver
       
       //맵 생성
       await self.createMap()
@@ -68,11 +70,14 @@ export default {
   beforeDestroy(){
 
     //맵 제거
-    if(this.map) this.map.destroy()
+    if(this.map){
 
-    //이벤트 해제
-    window.removeEventListener('mousedown', this.mousedown)
-    window.removeEventListener('mouseup', this.mouseup)
+      //이벤트 해제
+      this.removeMapEvents()
+
+      this.map.destroy()
+
+    }
 
   },
   methods:{
@@ -116,25 +121,8 @@ export default {
       this.refreshMarkerData()
       
       //지도 이벤트 설정
-      const self = this
-      self.isMoving = false
-      naver.maps.Event.addListener(this.map, 'mousedown', function() {
-        self.isMoving = true
-      });
+      this.addMapEvents()
 
-      naver.maps.Event.addListener(this.map, 'mousemove', function() {
-        if(!self.isMoving){
-          return
-        }
-      });
-      
-      naver.maps.Event.addListener(this.map, 'mouseup', function() {
-        
-      });
-
-      window.addEventListener('mousedown', self.mousedown)
-      window.addEventListener('mouseup', self.mouseup)
-      
     },
 
     //캔버스 사이즈 설정 (상하좌우 버퍼공간 고려해서 루트의 3배로 설정)
@@ -174,7 +162,6 @@ export default {
         
         this.markerData.push({
             x:this.x + Number(this.type()+this.ran()), y:this.y + Number(this.type()+this.ran()),
-            cx:Number(Math.random()*this.can.width), cy:Number(Math.random()*this.can.height),
         });
 
       }
@@ -220,7 +207,10 @@ export default {
       //마커 그리기
       let tempCoord;
       let scaleWidth = this.canSize.baseWidth - (this.markerImg.width/2);
-      let scaleHeight = this.canSize.baseHeight - (this.markerImg.height/2);
+      let scaleHeight = this.canSize.baseHeight - this.markerImg.height;
+
+      this.ctx.fillStyle = 'red'
+      this.ctx.font = '12px serif'
       for(let marker of this.markerData){
 
         tempCoord = this.getCoordToOffset(marker.x,marker.y)
@@ -228,18 +218,17 @@ export default {
             this.markerImg, 
             tempCoord.x + scaleWidth,
             tempCoord.y + scaleHeight,
-            // marker.cx,
-            // marker.cy,
         );
-        console.log('x:'+(tempCoord.x + scaleWidth), 'y:'+(tempCoord.y + scaleWidth));
-
+        
       }
 
     },
 
     //네이버 마커 삭제
     clearMarker(){
-      this.ctx.clearRect(-1*this.can.width, -1*this.can.height, this.can.width*3, this.can.height*3)
+
+      //this.ctx.fillStyle = 'rgb(31, 196, 73, 0.2)'
+      this.ctx.clearRect(0, 0, this.canSize.width, this.canSize.height)
       for(let mark of list){
         mark.setMap(null)
       }
