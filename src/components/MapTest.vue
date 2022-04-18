@@ -2,7 +2,7 @@
   <div style="padding:0px 100px;">
     <nav style="padding:10px;">
       <input style="width:calc(100% - 200px);" type="range" v-model="cnt" max="10000" @change="refreshMarkerData()"><span>{{cnt+' 개'}}</span>
-      <select v-model="mode" style="margin-left:20px;" @change="refreshMarkerData()">
+      <select v-model="mode" style="margin-left:20px;" @change="drawMarker()">
         <option value="canvas">캔버스</option>
         <option value="marker">네이버 마커</option>
       </select>
@@ -17,6 +17,8 @@
 
 //마커 저장 리스트
 const list = []
+
+import MapTestEvent from '@/components/js/MapTestEvent'
 
 export default {
 
@@ -36,7 +38,7 @@ export default {
       mode:'canvas',
 
       //마커 수
-      cnt:10,
+      cnt:0,
 
       //기본 좌표
       x:37.3595704,
@@ -75,6 +77,10 @@ export default {
   },
   methods:{
 
+    //이벤트
+    ...MapTestEvent,
+
+    //맵 생성
     async createMap(){
 
       await this.$nextTick()
@@ -151,47 +157,18 @@ export default {
 
     },
 
-    //이벤트 - mousedown
-    mousedown(e){
-
-      if(!this.isMoving){
-        return
-      }
-
-      this.moveX = e.x
-      this.moveY = e.y
-      
-    },
-    //이벤트 - mouseup
-    mouseup(e){
-
-      if(!this.isMoving){
-        return
-      }
-      
-      this.isMoving = false
-
-      if(!this.lastLeft) this.lastLeft = -1*this.canSize.baseWidth
-      if(!this.lastTop) this.lastTop = -1*this.canSize.baseHeight
-      
-      this.lastLeft += this.moveX - e.x
-      this.lastTop += this.moveY - e.y
-
-      this.can.style.left = this.lastLeft+'px'
-      this.can.style.top = this.lastTop+'px'
-
-      if(this.mode == 'canvas'){
-        this.clearMarker()
-        this.ctx.translate(e.x - this.moveX, e.y - this.moveY)
-        this.drawMarker2()
-      }
-      
+    getCoordToOffset(lat, lng){
+      return this.map.getProjection().fromCoordToOffset(new window.naver.maps.LatLng(lat, lng))
     },
 
     //마커 정보 재생성
     refreshMarkerData(){
 
       this.markerData.length = 0
+      this.markerData.push({
+        x:this.x,
+        y:this.y
+      })
       
       for(let i = 0 ; i < Number(this.cnt) ; i++){
         
@@ -237,17 +214,24 @@ export default {
     async drawMarker2(){
 
       //센터점 찍기
-      this.ctx.fillStyle = 'rgb(31, 196, 73)'
-      this.ctx.fillRect((this.can.width / 2) - 10, (this.can.height / 2) - 10, 20, 20)
+      // this.ctx.fillStyle = 'rgb(31, 196, 73)'
+      // this.ctx.fillRect((this.can.width / 2) - 10, (this.can.height / 2) - 10, 20, 20)
 
       //마커 그리기
+      let tempCoord;
+      let scaleWidth = this.canSize.baseWidth - (this.markerImg.width/2);
+      let scaleHeight = this.canSize.baseHeight - (this.markerImg.height/2);
       for(let marker of this.markerData){
 
+        tempCoord = this.getCoordToOffset(marker.x,marker.y)
         this.ctx.drawImage(
             this.markerImg, 
-            marker.cx,
-            marker.cy,
+            tempCoord.x + scaleWidth,
+            tempCoord.y + scaleHeight,
+            // marker.cx,
+            // marker.cy,
         );
+        console.log('x:'+(tempCoord.x + scaleWidth), 'y:'+(tempCoord.y + scaleWidth));
 
       }
 
