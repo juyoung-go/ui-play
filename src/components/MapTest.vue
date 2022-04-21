@@ -38,7 +38,7 @@ export default {
       mode:'canvas',
 
       //마커 수
-      cnt:20,
+      cnt:30,
 
       //기본 좌표
       x:37.3595704,
@@ -48,7 +48,7 @@ export default {
       markerImg:null,
 
       //캔버스 버퍼크기
-      canvasBuffer:5,
+      canvasBuffer:3,
 
     }
   },
@@ -230,6 +230,7 @@ export default {
         if(x < this.lastLeft || y < this.lastTop || x > this.canSize.width - this.markerImg.width || y > this.canSize.height - this.markerImg.height){
           continue
         }
+
         this.ctx.drawImage(
             this.markerImg, 
             x,

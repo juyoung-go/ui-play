@@ -49,14 +49,9 @@ export default {
     }
     console.log('center changed', coord);
 
-    const prev = this.getCoordToOffset(this.prevCoord.x,this.prevCoord.y)
-    const curr = this.getCoordToOffset(coord.x,coord.y)
-    const trans = this.changeCenter(prev, curr)
-
     if(this.mode == 'canvas'){
       this.clearMarker()
-      this.ctx.translate(trans.x, trans.y)
-      this.clearMarker()
+      this.initOffset()
     }
 
   },
@@ -93,9 +88,20 @@ export default {
     
   },
 
+  //offset 초기화
+  initOffset(){
+    this.ctx.translate(this.lastLeft + this.canSize.marginLeft, this.lastTop + this.canSize.marginTop)
+    //console.log('initOffset', this.lastLeft + this.canSize.marginLeft, this.lastTop + this.canSize.marginTop)
+    this.lastLeft = -1*this.canSize.marginLeft
+    this.lastTop = -1*this.canSize.marginTop
+    this.can.style.left = this.lastLeft+'px'
+    this.can.style.top = this.lastTop+'px'
+  },
   //센터 변경
   changeCenter(bef, aft){
-    
+
+    console.log('changeCenter', bef, aft);
+
     const deltaX = bef.x - aft.x
     const deltaY = bef.y - aft.y
     this.lastLeft += deltaX
@@ -105,6 +111,7 @@ export default {
     this.can.style.top = this.lastTop+'px'
 
     //translate x,y
+    console.log('translate', this.lastLeft, this.lastTop);
     return {
       x:deltaX * -1, y:deltaY * -1
     }
