@@ -1,13 +1,13 @@
 <template>
   <div style="padding:0px 100px;">
     <nav style="padding:10px;">
-      <input style="width:calc(100% - 200px);" type="range" v-model="cnt" max="10000" @change="refreshMarkerData()"><span>{{cnt+' 개'}}</span>
+      <input style="width:calc(100% - 200px);" type="range" v-model="cnt" max="500000" @change="refreshMarkerData()"><span>{{cnt+' 개'}}</span>
       <select v-model="mode" style="margin-left:20px;" @change="drawMarker()">
         <option value="canvas">캔버스</option>
         <option value="marker">네이버 마커</option>
       </select>
     </nav>
-    <div ref="root" id="map" style="width:100%;height:600px;">
+    <div ref="root" id="map" style="width:1000px;height:500px;">
       
     </div>
   </div>
@@ -38,7 +38,7 @@ export default {
       mode:'canvas',
 
       //마커 수
-      cnt:100,
+      cnt:20,
 
       //기본 좌표
       x:37.3595704,
@@ -46,6 +46,9 @@ export default {
 
       //마커 이미지
       markerImg:null,
+
+      //캔버스 버퍼크기
+      canvasBuffer:5,
 
     }
   },
@@ -114,8 +117,8 @@ export default {
       this.map.getPanes().overlayLayer.appendChild(this.can);
 
       //마커 이미지 로드
-      this.markerImg = await this.createImage('marker-default.png')
-
+      this.markerImg = await this.createImage('marker-default.png', 22, 33)
+      
       //마커 데이터
       this.markerData = []
       this.refreshMarkerData()
@@ -131,14 +134,19 @@ export default {
       this.canSize = {
         baseWidth:this.$refs.root.offsetWidth,
         baseHeight:this.$refs.root.offsetHeight,
-        width:this.$refs.root.offsetWidth * 3,
-        height:this.$refs.root.offsetHeight * 3,
+        width:this.$refs.root.offsetWidth * this.canvasBuffer,
+        height:this.$refs.root.offsetHeight * this.canvasBuffer,
+        marginLeft:(this.$refs.root.offsetWidth * (this.canvasBuffer - 1)) / 2,
+        marginTop:(this.$refs.root.offsetHeight * (this.canvasBuffer - 1)) / 2,
       }
       
+      this.lastLeft = -1*this.canSize.marginLeft
+      this.lastTop = -1*this.canSize.marginTop
+
       this.can.style.width = this.canSize.width+'px'
       this.can.style.height = this.canSize.height+'px'
-      this.can.style.left = (-1 * this.canSize.baseWidth)+'px'
-      this.can.style.top = (-1 * this.canSize.baseHeight)+'px'
+      this.can.style.left = this.lastLeft+'px'
+      this.can.style.top = this.lastTop+'px'
       
       this.can.width = this.canSize.width
       this.can.height = this.canSize.height
@@ -171,7 +179,7 @@ export default {
     },
 
     //마커 그리기
-    async drawMarker(){
+    drawMarker(){
       this.clearMarker()
       if(this.mode == 'canvas'){
         this.drawMarker2()
@@ -181,7 +189,7 @@ export default {
     },
 
     //마커 그리기 - 캔버스
-    async drawMarker1(){
+    drawMarker1(){
 
       list.length = 0
 
@@ -198,28 +206,38 @@ export default {
     },
 
     //마커 그리기 - 캔버스
-    async drawMarker2(){
+    drawMarker2(){
 
       //센터점 찍기
       // this.ctx.fillStyle = 'rgb(31, 196, 73)'
       // this.ctx.fillRect((this.can.width / 2) - 10, (this.can.height / 2) - 10, 20, 20)
 
+      console.log('draw marker');
+
       //마커 그리기
       let tempCoord;
-      let scaleWidth = this.canSize.baseWidth - (this.markerImg.width/2);
-      let scaleHeight = this.canSize.baseHeight - this.markerImg.height;
+      let scaleWidth = this.canSize.marginLeft - (this.markerImg.width/2);
+      let scaleHeight = this.canSize.marginTop - this.markerImg.height;
 
-      this.ctx.fillStyle = 'red'
-      this.ctx.font = '12px serif'
+      let x, y
       for(let marker of this.markerData){
 
         tempCoord = this.getCoordToOffset(marker.x,marker.y)
+
+        x = tempCoord.x + scaleWidth
+        y = tempCoord.y + scaleHeight
+
+        if(x < this.lastLeft || y < this.lastTop || x > this.canSize.width - this.markerImg.width || y > this.canSize.height - this.markerImg.height){
+          continue
+        }
         this.ctx.drawImage(
             this.markerImg, 
-            tempCoord.x + scaleWidth,
-            tempCoord.y + scaleHeight,
+            x,
+            y,
+            22,
+            33,
         );
-        
+
       }
 
     },
@@ -228,15 +246,20 @@ export default {
     clearMarker(){
 
       //this.ctx.fillStyle = 'rgb(31, 196, 73, 0.2)'
-      this.ctx.clearRect(0, 0, this.canSize.width, this.canSize.height)
+      this.ctx.clearRect(Math.min(this.lastLeft, 0), Math.min(this.lastTop, 0), this.canSize.width + Math.abs(this.lastLeft), this.canSize.height + Math.abs(this.lastTop))
+      // console.log(
+      //   'clear start => ',
+      //   Math.min(this.lastLeft, 0), Math.min(this.lastTop, 0), this.canSize.width + Math.abs(this.lastLeft), this.canSize.height + Math.abs(this.lastTop)
+      // )
+      
       for(let mark of list){
         mark.setMap(null)
       }
     },
 
     //이미지 로드
-    async createImage (imageSrc){
-      const image = document.createElement('IMG');
+    async createImage (imageSrc, width, height){
+      const image = new Image(width, height);
       image.src = require('@/assets/img/'+imageSrc);
       await image.decode();
       return image;
@@ -245,7 +268,7 @@ export default {
     //랜덤 생성 utils
     type(){return Math.random() > 0.5?'-':''},
     ran(){
-      return Number(Math.random() * 0.1).toFixed(6)
+      return Number(Math.random() * (Math.random() * 0.1)).toFixed(6)
     },
 
   }

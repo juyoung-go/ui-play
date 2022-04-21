@@ -13,10 +13,11 @@
 
 import PagingTest from './components/PagingTest.vue'
 import MapTest from './components/MapTest.vue'
+import CanvasTest from './components/CanvasTest.vue'
 export default {
   name: 'App',
   components:{
-    PagingTest, MapTest
+    PagingTest, MapTest, CanvasTest
   },
   created(){
     console.log(this.$options.components);

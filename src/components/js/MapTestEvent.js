@@ -68,6 +68,8 @@ export default {
       return
     }
 
+    console.log('mousedown', e);
+
     this.moveX = e.x
     this.moveY = e.y
     
@@ -93,19 +95,18 @@ export default {
 
   //센터 변경
   changeCenter(bef, aft){
-
-    if(!this.lastLeft) this.lastLeft = -1*this.canSize.baseWidth
-    if(!this.lastTop) this.lastTop = -1*this.canSize.baseHeight
     
-    this.lastLeft += bef.x - aft.x
-    this.lastTop += bef.y - aft.y
+    const deltaX = bef.x - aft.x
+    const deltaY = bef.y - aft.y
+    this.lastLeft += deltaX
+    this.lastTop += deltaY
 
     this.can.style.left = this.lastLeft+'px'
     this.can.style.top = this.lastTop+'px'
 
     //translate x,y
     return {
-      x:aft.x - bef.x, y:aft.y - bef.y
+      x:deltaX * -1, y:deltaY * -1
     }
     
   },
