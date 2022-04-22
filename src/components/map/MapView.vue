@@ -1,6 +1,9 @@
 <template>
-  <component v-if="mapComponent" 
+  <component v-if="mapComponent"
+  ref="map"
   :is="mapComponent"
+  v-on="$listeners"
+  :mapKey="mapKey"
   style="width:100%;height:100%;border:1px solid black;"
   >
   </component>
@@ -26,6 +29,12 @@ export default {
       type:String,
       required:true,
     },
+
+    //마커 목록
+    markerData:{
+      type:Array,
+      default(){return []}
+    }
 
   },
   watch:{
@@ -64,6 +73,10 @@ export default {
         }
       })
 
+    },
+    drawMarker(){
+      this.$refs.map.markerData = this.markerData
+      this.$refs.map.drawMarker()
     }
   }
 }
