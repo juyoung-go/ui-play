@@ -1,10 +1,16 @@
 <template>
   <div id="app">
-    <select v-model="comName" style="height:40px;margin-right:5px;" @change="changeMode()">
-      <template v-for="(opt, i) in comList">
-        <option :key="i" :value="opt.value">{{opt.label}}</option>
-      </template>
-    </select>
+    <div style="height:40px;display:flex;justify-content:space-between;align-items:center;padding:20px 5px;">
+      <div style="margin-left:10px;border:1px solid gray;border-radius:5px;font-size:16px;padding:5px;height:30px;background:lightgreen;">My UI Playground</div>
+      <div>
+        <select v-model="comName" style="margin-right:5px;" @change="changeMode()">
+          <template v-for="(opt, i) in comList">
+            <option :key="i" :value="opt.value">{{opt.label}}</option>
+          </template>
+        </select>
+      </div>
+      <div></div>
+    </div>
     <component v-if="comName" :is="$options.components[comName]" style="height:calc(100% - 40px);"></component>
   </div>
 </template>
@@ -13,12 +19,12 @@
 
 import PagingTest from './components/PagingTest.vue'
 import MapTest from './components/MapTest.vue'
-import CanvasTest from './components/CanvasTest.vue'
+import DashboardTest from './components/DashboardTest.vue'
 import MapComponentTest from './components/MapComponentTest.vue'
 export default {
   name: 'App',
   components:{
-    PagingTest, MapTest, CanvasTest, MapComponentTest
+    PagingTest, MapTest, DashboardTest, MapComponentTest
   },
   created(){
     console.log(this.$options.components);
@@ -36,7 +42,7 @@ export default {
   data(){
     return {
       comList:[],
-      comName:'MapComponentTest',
+      comName:'PagingTest',
     }
   }
 }
