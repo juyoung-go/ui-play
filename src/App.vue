@@ -21,13 +21,14 @@ import PagingTest from './components/PagingTest.vue'
 import MapTest from './components/MapTest.vue'
 import DashboardTest from './components/DashboardTest.vue'
 import MapComponentTest from './components/MapComponentTest.vue'
+import MapMarkerTest from './components/MapMarkerTest.vue'
 export default {
   name: 'App',
   components:{
-    PagingTest, MapTest, DashboardTest, MapComponentTest
+    PagingTest, MapTest, DashboardTest, MapComponentTest, MapMarkerTest
   },
   created(){
-    console.log(this.$options.components);
+    
     let names = Object.getOwnPropertyNames(this.$options.components)
     for(let name of names){
       if(name == 'App'){
@@ -42,7 +43,7 @@ export default {
   data(){
     return {
       comList:[],
-      comName:'PagingTest',
+      comName:'MapMarkerTest',
     }
   }
 }
