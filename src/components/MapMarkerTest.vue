@@ -19,6 +19,8 @@
 //마커 저장 리스트
 const list = []
 
+import ObjectPoolUtil from './js/ObjectPoolUtil.tsx'
+
 export default {
 
   name:'MapTest',
@@ -34,10 +36,10 @@ export default {
     return {
 
       //오버레이 표시 모드
-      mode:'nocache',
+      mode:'cached',
 
       //마커 수
-      cnt:1000,
+      cnt:30,
 
       //기본 좌표
       x:37.3595704,
@@ -52,7 +54,7 @@ export default {
     }
   },
   async created(){
-
+    
     await this.$nextTick()
 
     const self = this
@@ -86,14 +88,20 @@ export default {
 
     go(name){
       const t = performance.now()
-      this[name]()
+      this[name](...this.argumentsShift(...arguments))
       this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(${name})`, (performance.now() - t).toFixed(0) + ' ms')
     },
 
     async goAsync(name){
       const t = performance.now()
-      await this[name]()
+      await this[name](...this.argumentsShift(...arguments))
       this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(${name})`, (performance.now() - t).toFixed(0) + ' ms')
+    },
+
+    argumentsShift(){
+      let newarg = [...arguments]
+      newarg.shift()
+      return newarg
     },
 
     redraw(){
@@ -105,7 +113,8 @@ export default {
       this.go('drawMarker')
     },
     cachedRedraw(){
-
+      this.go('clearMarker')
+      this.go('drawMarker')
     },
 
     //이벤트 추가
@@ -131,12 +140,15 @@ export default {
     //맵 이벤트
     mapMouseDown(){
       this.isMoving = true
+      this.go('setMarkerVisible', false)
     },
     mousedown(){
 
     },
     mouseup(){
       if(!this.isMoving) return
+      this.isMoving = false
+      this.go('setMarkerVisible', true)
     },
     
     getCoordToOffset(lat, lng){
@@ -167,7 +179,7 @@ export default {
       this[this.mode+'DrawMarker']()
     },
 
-    //마커 그리기 - 캔버스
+    //마커 그리기 - no cache
     nocacheDrawMarker(){
 
       list.length = 0
@@ -177,22 +189,48 @@ export default {
         list.push(
           new naver.maps.Marker({
             position: new naver.maps.LatLng(marker.x, marker.y),
-            map: this.map
+            map: this.map,
+            clickable:false,
           })
         )
       }
 
     },
 
-    //마커 그리기 - 캔버스
+    //마커 그리기 - cache
     cachedDrawMarker(){
+
+      list.length = 0
+
+      const naver = window.naver
+      let naverMarker;
+      for(let marker of this.markerData){
+
+        naverMarker = this.pool.getPoolItem()
+        naverMarker.setPosition(new naver.maps.LatLng(marker.x, marker.y))
+        naverMarker.setVisible(true)
+
+        list.push(naverMarker)
+
+      }
 
     },
 
     //네이버 마커 삭제
     clearMarker(){
+      this[this.mode+'ClearMarker']()
+    },
+    
+    nocacheClearMarker(){
       for(let mark of list){
         mark.setMap(null)
+      }
+    },
+
+    cachedClearMarker(){
+      for(let mark of list){
+        mark.setVisible(false)
+        this.pool.releasePoolItem(mark)
       }
     },
 
@@ -219,7 +257,18 @@ export default {
       //마커 데이터
       this.markerData = []
       this.refreshMarkerData()
-      
+
+      //마커 Pool 생성
+      const self = this
+      this.pool = ObjectPoolUtil.getInstance().setFactory(()=>{
+        return new naver.maps.Marker({
+          position: new naver.maps.LatLng(self.x, self.y),
+          map: self.map,
+          clickable:false,
+          visible:false,
+        })
+      }).createPool(10)
+
       //지도 이벤트 설정
       this.addMapEvents()
 
