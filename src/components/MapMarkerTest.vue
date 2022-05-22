@@ -140,7 +140,7 @@ export default {
     //맵 이벤트
     mapMouseDown(){
       this.isMoving = true
-      this.go('setMarkerVisible', false)
+      if(this.mode == 'cached') this.go('setMarkerVisible', false)
     },
     mousedown(){
 
@@ -148,7 +148,7 @@ export default {
     mouseup(){
       if(!this.isMoving) return
       this.isMoving = false
-      this.go('setMarkerVisible', true)
+      if(this.mode == 'cached') this.go('setMarkerVisible', true)
     },
     
     getCoordToOffset(lat, lng){
