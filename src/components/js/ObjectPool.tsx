@@ -6,6 +6,9 @@ class ObjectPoolItem<T> {
   getItem(){
     return this.item
   }
+  clear(){
+    this.item = null
+  }
 }
 
 class ObjectPool<T>{
@@ -15,8 +18,10 @@ class ObjectPool<T>{
   private usePool:Map<T, ObjectPoolItem<T>>
 
   constructor(){
+
     this.idlePool = []
     this.usePool = new Map()
+
   }
 
   setFactory(factory:Function){
@@ -66,6 +71,18 @@ class ObjectPool<T>{
     })
   }
 
+  destroy(){
+    this.factory = null
+    this.idlePool.forEach((item)=>{
+      item.clear()
+    })
+    this.usePool.forEach((item)=>{
+      item.clear()
+    })
+    this.idlePool.length = 0
+    this.usePool.clear()
+  }
+
   private createPoolItem(){
     if(!this.factory || !(this.factory instanceof Function)){
       throw new Error('setFactory 가 정상적으로 실행되지 않았습니다.')
@@ -75,10 +92,4 @@ class ObjectPool<T>{
 
 }
 
-class ObjectPoolUtil{
-  static getInstance(){
-    return new ObjectPool<any>()
-  }
-}
-
-export default ObjectPoolUtil
+export default ObjectPool

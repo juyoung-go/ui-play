@@ -19,7 +19,7 @@
 //마커 저장 리스트
 const list = []
 
-import ObjectPoolUtil from './js/ObjectPoolUtil.tsx'
+import ObjectPool from './js/ObjectPool.tsx'
 
 export default {
 
@@ -80,6 +80,9 @@ export default {
       this.removeMapEvents()
 
       this.map.destroy()
+
+      //pool 객체 삭제
+      this.pool.destroy()
 
     }
 
@@ -260,14 +263,19 @@ export default {
 
       //마커 Pool 생성
       const self = this
-      this.pool = ObjectPoolUtil.getInstance().setFactory(()=>{
+
+      this.pool = new ObjectPool()
+      //factory 셋팅
+      .setFactory(()=>{
         return new naver.maps.Marker({
           position: new naver.maps.LatLng(self.x, self.y),
           map: self.map,
           clickable:false,
           visible:false,
         })
-      }).createPool(10)
+      })
+      //초기 pool 사이즈
+      .createPool(10)
 
       //지도 이벤트 설정
       this.addMapEvents()
