@@ -265,6 +265,10 @@ export default {
       const self = this
 
       this.pool = new ObjectPool()
+
+      //logging on
+      .setLog(true)
+      
       //factory 셋팅
       .setFactory(()=>{
         return new naver.maps.Marker({
@@ -274,8 +278,21 @@ export default {
           visible:false,
         })
       })
+
+      //clear function 셋팅
+      .setClear((item)=>{
+        console.log('item cleared');
+        item.setMap(null)
+      })
+
       //초기 pool 사이즈
-      .createPool(10)
+      .createPool(1000)
+
+      //TTL 체크 간격 (기본 5초)
+      .setCheckLiveTimeInterval(1000)
+
+      //최대 Live time 셋팅 (셋팅하지 않으면 TTL 에 따른 클리어 로직 돌지 않음)
+      .setTimeToLive(60000)
 
       //지도 이벤트 설정
       this.addMapEvents()
