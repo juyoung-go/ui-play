@@ -19,7 +19,7 @@
 //마커 저장 리스트
 const list = []
 
-import ObjectPool from './js/ObjectPool.tsx'
+import {ObjectPool} from '@mint-ui/tools'
 
 export default {
 
@@ -292,7 +292,7 @@ export default {
       .setCheckLiveTimeInterval(1000)
 
       //최대 Live time 셋팅 (셋팅하지 않으면 TTL 에 따른 클리어 로직 돌지 않음)
-      .setTimeToLive(60000)
+      .setTimeToLive(10000)
 
       //지도 이벤트 설정
       this.addMapEvents()

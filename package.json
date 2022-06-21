@@ -12,6 +12,7 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@mint-ui/tools": "^1.0.3",
     "axios": "^0.26.1",
     "core-js": "^3.8.3",
     "vue": "^2.6.14"
