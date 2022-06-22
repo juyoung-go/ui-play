@@ -22,10 +22,12 @@ import MapTest from './components/MapTest.vue'
 import DashboardTest from './components/DashboardTest.vue'
 import MapComponentTest from './components/MapComponentTest.vue'
 import MapMarkerTest from './components/MapMarkerTest.vue'
+import MapMarkerKakaoTest from './components/MapMarkerKakaoTest.vue'
+import MapMarkerGoogleTest from './components/MapMarkerGoogleTest.vue'
 export default {
   name: 'App',
   components:{
-    PagingTest, MapTest, DashboardTest, MapComponentTest, MapMarkerTest
+    PagingTest, MapTest, DashboardTest, MapComponentTest, MapMarkerTest, MapMarkerKakaoTest, MapMarkerGoogleTest
   },
   created(){
     
@@ -43,7 +45,7 @@ export default {
   data(){
     return {
       comList:[],
-      comName:'MapMarkerTest',
+      comName:'MapMarkerGoogleTest',
     }
   }
 }

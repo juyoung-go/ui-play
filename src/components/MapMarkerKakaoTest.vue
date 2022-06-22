@@ -20,18 +20,18 @@
 const list = []
 
 import {ObjectPool} from '@mint-ui/tools'
-
+/* eslint-disable */
 export default {
 
   name:'MapTest',
   mounted(){
 
-    //네이버 지도 로드
-    if(!window.naver){
-      let foo = document.createElement('script');    
-      foo.setAttribute("src","https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=83bfuniegk&amp;submodules=panorama,geocoder,drawing,visualization");
-      this.$refs.root.appendChild(foo);
-    }
+    // //카카오 지도 로드
+    // let foo = document.createElement('script');
+    // foo.type = 'text/javascript'
+    // foo.setAttribute("src","//dapi.kakao.com/v2/maps/sdk.js?appkey=2060d7492dbe446eaaab7af84f472427&libraries=services,clusterer,drawing");
+    // document.querySelector('head').appendChild(foo);
+
   },
   data(){
     return {
@@ -108,7 +108,7 @@ export default {
       return newarg
     },
 
-    redraw(){    
+    redraw(){
       this[this.mode+'Redraw']()
     },
     nocacheRedraw(){
@@ -187,15 +187,16 @@ export default {
 
       list.length = 0
 
-      const naver = window.naver
+      const naver = window.kakao
+      let mark
       for(let marker of this.markerData){
-        list.push(
-          new naver.maps.Marker({
+        mark = new naver.maps.Marker({
             position: new naver.maps.LatLng(marker.x, marker.y),
-            map: this.map,
-            clickable:false,
           })
+        list.push(
+          mark
         )
+        mark.setMap(this.map)
       }
 
     },
@@ -205,7 +206,7 @@ export default {
 
       list.length = 0
 
-      const naver = window.naver
+      const naver = window.kakao
       let naverMarker;
       for(let marker of this.markerData){
 
@@ -249,12 +250,12 @@ export default {
 
       await this.$nextTick()
 
-      const naver = window.naver
+//      const kakao = window.kakao
 
       //지도 생성
-      this.map = new naver.maps.Map('map', {
-        center: new naver.maps.LatLng(this.x, this.y),
-        zoom: 15,
+      this.map = new kakao.maps.Map(this.$refs.root, {
+        center: new kakao.maps.LatLng(this.x, this.y),
+        level: 3,
       })
 
       //마커 데이터
@@ -271,8 +272,8 @@ export default {
       
       //factory 셋팅
       .setFactory(()=>{
-        return new naver.maps.Marker({
-          position: new naver.maps.LatLng(self.x, self.y),
+        return new kakao.maps.Marker({
+          position: new kakao.maps.LatLng(self.x, self.y),
           map: self.map,
           clickable:false,
           visible:false,
@@ -295,7 +296,7 @@ export default {
       //.setTimeToLive(10000)
 
       //지도 이벤트 설정
-      this.addMapEvents()
+      //this.addMapEvents()
 
     },
 
