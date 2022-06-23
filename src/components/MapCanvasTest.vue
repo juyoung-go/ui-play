@@ -1,12 +1,13 @@
 <template>
   <div style="padding:0px 40px;">
     <nav style="padding:10px;">
-      <input style="width:calc(100% - 300px);" type="range" v-model="cnt" max="500000" @change="refreshMarkerData()"><span>{{cnt+' 개'}}</span>
+      <input style="width:calc(100% - 500px);" type="range" v-model="cnt" max="500000" @change="refreshMarkerData()"><span>{{cnt+' 개'}}</span>
       <select v-model="mode" style="margin:0px 5px;" @change="drawMarker()">
         <option value="canvas">캔버스</option>
         <option value="marker">네이버 마커</option>
       </select>
-      <button @click="drawMarker()">새로고침</button>
+      <button style="margin:0px 5px;" @click="drawMarker()">새로고침</button>
+      <button style="margin:0px 5px;" @click="aniStop = !aniStop">{{aniStop?'애니메이션 시작':'정지'}}</button>
     </nav>
     <div ref="root" id="map" style="width:1000px;height:500px;">
       
@@ -40,7 +41,7 @@ export default {
       mode:'canvas',
 
       //마커 수
-      cnt:30,
+      cnt:500,
 
       //기본 좌표
       x:37.3595704,
@@ -51,6 +52,9 @@ export default {
 
       //캔버스 버퍼크기
       canvasBuffer:3,
+
+      //애니메이션
+      aniStop:true,
 
     }
   },
@@ -71,6 +75,33 @@ export default {
 
     }, 1000)
 
+    let direction = 1
+    let targetCnt = this.cnt + (this.cnt * 0.7 * direction)
+    this.unit = Number((this.cnt * 0.01).toFixed(0))
+    this.inter = window.setInterval(() =>{
+
+      if(self.aniStop){
+        return
+      }
+
+      if(self.unit >= 1){
+        const cnt = Number(self.cnt)
+        let tempCnt = cnt + (self.unit * direction)
+        if(direction == 1 && tempCnt >= targetCnt
+        || direction == -1 && tempCnt <= targetCnt
+        ){
+          direction = direction * -1
+          targetCnt = cnt + (cnt * 0.7 * direction)
+          self.unit = Number((cnt * 0.01).toFixed(0))
+        }else{
+          self.cnt = cnt + (self.unit * direction)
+          self.refreshMarkerData(self.cnt)
+        }
+
+      }
+
+    }, 200)
+
   },
   beforeDestroy(){
 
@@ -83,6 +114,8 @@ export default {
       this.map.destroy()
 
     }
+
+    this.inter && window.clearInterval(this.inter)
 
   },
   methods:{
@@ -100,7 +133,7 @@ export default {
       //지도 생성
       this.map = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(this.x, this.y),
-        zoom: 7,
+        zoom: 9,
       })
 
       //오버레이 캔버스 생성
@@ -178,7 +211,34 @@ export default {
     },
 
     //마커 정보 재생성
-    refreshMarkerData(){
+    refreshMarkerData(targetCnt){
+
+      this.unit = Number((this.cnt * 0.01).toFixed(0))
+
+      if(targetCnt !== undefined){
+        
+        const to = targetCnt - this.markerData.length
+
+        if(to > 0){
+          for(let i = 0 ; i < to ; i++){
+        
+            this.markerData.push({
+                x:this.x + Number(this.type()+this.ran()), y:this.y + Number(this.type()+this.ran()),
+            });
+
+          }
+        }else{
+          for(let i = 0 ; i < to * -1 ; i++){
+        
+            this.markerData.pop()
+
+          }
+        }
+
+        this.drawMarker()
+
+        return
+      }
 
       this.markerData.length = 0
       this.markerData.push({
@@ -256,7 +316,7 @@ export default {
         }
 
         this.markerImg.circle
-        ?this.drawRect(x, y)
+        ?this.drawCircle(x, y)
         :this.ctx.drawImage(
             this.markerImg, 
             x,
@@ -272,10 +332,10 @@ export default {
     },
     drawCircle(x, y){
       this.ctx.beginPath();
-      this.ctx.strokeStyle = '#0d6dbf';
-      this.ctx.lineWidth = 2;
+      // this.ctx.strokeStyle = '#0d6dbf';
+      // this.ctx.lineWidth = 2;
       this.ctx.arc(x, y, this.markerImg.width, 0, 2 * Math.PI);
-      this.ctx.stroke();
+      // this.ctx.stroke();
       this.ctx.fillStyle = 'red';
       this.ctx.fill();
     },
@@ -331,7 +391,9 @@ export default {
 
     //로그
     log(){
-      this.$log(...arguments)
+      
+      this.aniStop && this.$log(...arguments)
+      
     },
     //시간
     time(t, sec){
