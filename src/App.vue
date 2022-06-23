@@ -34,10 +34,11 @@ import MapComponentTest from './components/MapComponentTest.vue'
 import MapMarkerNaverTest from './components/MapMarkerNaverTest.vue'
 import MapMarkerKakaoTest from './components/MapMarkerKakaoTest.vue'
 import MapMarkerGoogleTest from './components/MapMarkerGoogleTest.vue'
+import MapDrawTest from './components/MapDrawTest.vue'
 export default {
   name: 'App',
   components:{
-    PagingTest, MapTest, DashboardTest, MapComponentTest, MapMarkerNaverTest, MapMarkerKakaoTest, MapMarkerGoogleTest
+    PagingTest, MapTest, DashboardTest, MapComponentTest, MapMarkerNaverTest, MapMarkerKakaoTest, MapMarkerGoogleTest, MapDrawTest
   },
   created(){
     
@@ -105,8 +106,8 @@ export default {
   data(){
     return {
       msg:[],
-      comList:[],
-      comName:'MapMarkerNaverTest',
+      comList:[{label:'선택', value:''}],
+      comName:'',
     }
   },
   methods:{
