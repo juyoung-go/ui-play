@@ -41,7 +41,7 @@ export default {
       mode:'canvas',
 
       //마커 수
-      cnt:500,
+      cnt:15000,
 
       //기본 좌표
       x:37.3595704,
@@ -75,8 +75,8 @@ export default {
 
     }, 1000)
 
-    let direction = 1
-    let targetCnt = this.cnt + (this.cnt * 0.7 * direction)
+    this.direction = -1
+    this.targetCnt = this.cnt + (this.cnt * 0.5 * this.direction)
     this.unit = Number((this.cnt * 0.01).toFixed(0))
     this.inter = window.setInterval(() =>{
 
@@ -86,15 +86,15 @@ export default {
 
       if(self.unit >= 1){
         const cnt = Number(self.cnt)
-        let tempCnt = cnt + (self.unit * direction)
-        if(direction == 1 && tempCnt >= targetCnt
-        || direction == -1 && tempCnt <= targetCnt
+        let tempCnt = cnt + (self.unit * self.direction)
+        if(self.direction == 1 && tempCnt >= self.targetCnt
+        || self.direction == -1 && tempCnt <= self.targetCnt
         ){
-          direction = direction * -1
-          targetCnt = cnt + (cnt * 0.7 * direction)
+          self.direction = self.direction * -1
+          self.targetCnt = cnt + (cnt * 0.5 * self.direction)
           self.unit = Number((cnt * 0.01).toFixed(0))
         }else{
-          self.cnt = cnt + (self.unit * direction)
+          self.cnt = cnt + (self.unit * self.direction)
           self.refreshMarkerData(self.cnt)
         }
 
@@ -213,8 +213,6 @@ export default {
     //마커 정보 재생성
     refreshMarkerData(targetCnt){
 
-      this.unit = Number((this.cnt * 0.01).toFixed(0))
-
       if(targetCnt !== undefined){
         
         const to = targetCnt - this.markerData.length
@@ -239,6 +237,12 @@ export default {
 
         return
       }
+
+      this.direction = -1
+      const cnt = Number(this.cnt)
+      this.unit = Number((cnt * 0.01).toFixed(0))
+      this.targetCnt = cnt + (cnt * 0.5 * this.direction)
+      console.log('targetCnt => ', this.targetCnt, this.unit, this.direction);
 
       this.markerData.length = 0
       this.markerData.push({
@@ -393,7 +397,7 @@ export default {
     log(){
       
       this.aniStop && this.$log(...arguments)
-      
+
     },
     //시간
     time(t, sec){
