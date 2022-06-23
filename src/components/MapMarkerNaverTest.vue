@@ -23,7 +23,8 @@ import {ObjectPool} from '@mint-ui/tools'
 
 export default {
 
-  name:'MapTest',
+  // eslint-disable-next-line
+  name:'1. 마커테스트 / 네이버',
   mounted(){
 
     //네이버 지도 로드

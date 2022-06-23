@@ -23,7 +23,8 @@ import {ObjectPool} from '@mint-ui/tools'
 /* eslint-disable */
 export default {
 
-  name:'MapTest',
+  // eslint-disable-next-line
+  name:'2. 마커테스트 / 카카오',
   mounted(){
 
     // //카카오 지도 로드

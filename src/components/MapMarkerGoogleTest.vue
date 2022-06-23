@@ -23,7 +23,8 @@ import {ObjectPool} from '@mint-ui/tools'
 /* eslint-disable */
 export default {
 
-  name:'MapTest',
+  // eslint-disable-next-line
+  name:'3. 마커테스트 / 구글',
   mounted(){
 
     //구글 지도 로드

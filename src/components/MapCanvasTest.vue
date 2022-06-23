@@ -1,11 +1,12 @@
 <template>
-  <div style="padding:0px 100px;">
+  <div style="padding:0px 40px;">
     <nav style="padding:10px;">
-      <input style="width:calc(100% - 200px);" type="range" v-model="cnt" max="500000" @change="refreshMarkerData()"><span>{{cnt+' 개'}}</span>
-      <select v-model="mode" style="margin-left:20px;" @change="drawMarker()">
+      <input style="width:calc(100% - 300px);" type="range" v-model="cnt" max="500000" @change="refreshMarkerData()"><span>{{cnt+' 개'}}</span>
+      <select v-model="mode" style="margin:0px 5px;" @change="drawMarker()">
         <option value="canvas">캔버스</option>
         <option value="marker">네이버 마커</option>
       </select>
+      <button @click="drawMarker()">새로고침</button>
     </nav>
     <div ref="root" id="map" style="width:1000px;height:500px;">
       
@@ -22,7 +23,8 @@ import MapTestEvent from '@/components/js/MapTestEvent'
 
 export default {
 
-  name:'MapTest',
+  // eslint-disable-next-line
+  name:'4. 마커 캔버스 테스트',
   mounted(){
 
     //네이버 지도 로드
@@ -98,7 +100,7 @@ export default {
       //지도 생성
       this.map = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(this.x, this.y),
-        zoom: 15,
+        zoom: 7,
       })
 
       //오버레이 캔버스 생성
@@ -107,17 +109,18 @@ export default {
       this.can.style.border = '1px solid red'
       this.can.style.zIndex = 10000;
 
-      //캔버스 크기 설정
-      this.sizingCanvas()
-
       //캔버스 컨택스트
       this.ctx = this.can.getContext('2d')
+
+      //캔버스 크기 설정
+      this.sizingCanvas()
 
       //지도 레이어에 캔버스 삽입
       this.map.getPanes().overlayLayer.appendChild(this.can);
 
       //마커 이미지 로드
-      this.markerImg = await this.createImage('marker-default.png', 22, 33)
+      // this.markerImg = await this.createImage('marker-default.png', 22, 33) //이미지
+      this.markerImg = {circle:true, width:1, height:1} //원
       
       //마커 데이터
       this.markerData = []
@@ -150,6 +153,23 @@ export default {
       
       this.can.width = this.canSize.width
       this.can.height = this.canSize.height
+
+      // Get the DPR and size of the canvas
+      var dpr = window.devicePixelRatio;
+      var rect = this.can.getBoundingClientRect();
+      console.log('dpr', dpr);
+      console.log('rect', rect);
+
+      // Set the "actual" size of the canvas
+      // this.can.width = rect.width * dpr;
+      // this.can.height = rect.height * dpr;
+
+      // Scale the context to ensure correct drawing operations
+      // this.ctx.scale(dpr, dpr);
+
+      // Set the "drawn" size of the canvas
+      // this.can.style.width = rect.width + 'px';
+      // this.can.style.height = rect.height + 'px';
 
     },
 
@@ -191,6 +211,8 @@ export default {
     //마커 그리기 - 캔버스
     drawMarker1(){
 
+      const t = performance.now()
+
       list.length = 0
 
       const naver = window.naver
@@ -203,6 +225,8 @@ export default {
         )
       }
 
+      this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(drawMarker1)`, this.time(t, true))
+
     },
 
     //마커 그리기 - 캔버스
@@ -212,7 +236,7 @@ export default {
       // this.ctx.fillStyle = 'rgb(31, 196, 73)'
       // this.ctx.fillRect((this.can.width / 2) - 10, (this.can.height / 2) - 10, 20, 20)
 
-      console.log('draw marker');
+      const t = performance.now()
 
       //마커 그리기
       let tempCoord;
@@ -224,14 +248,16 @@ export default {
 
         tempCoord = this.getCoordToOffset(marker.x,marker.y)
 
-        x = tempCoord.x + scaleWidth
-        y = tempCoord.y + scaleHeight
+        x = Math.floor(tempCoord.x + scaleWidth) + 0.5
+        y = Math.floor(tempCoord.y + scaleHeight) + 0.5
 
         if(x < this.lastLeft || y < this.lastTop || x > this.canSize.width - this.markerImg.width || y > this.canSize.height - this.markerImg.height){
           continue
         }
 
-        this.ctx.drawImage(
+        this.markerImg.circle
+        ?this.drawRect(x, y)
+        :this.ctx.drawImage(
             this.markerImg, 
             x,
             y,
@@ -241,10 +267,32 @@ export default {
 
       }
 
+      this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(drawMarker2)`, this.time(t, true))
+
+    },
+    drawCircle(x, y){
+      this.ctx.beginPath();
+      this.ctx.strokeStyle = '#0d6dbf';
+      this.ctx.lineWidth = 2;
+      this.ctx.arc(x, y, this.markerImg.width, 0, 2 * Math.PI);
+      this.ctx.stroke();
+      this.ctx.fillStyle = 'red';
+      this.ctx.fill();
+    },
+    drawRect(x, y){
+      this.ctx.beginPath();
+      // this.ctx.strokeStyle = '#0d6dbf';
+      // this.ctx.lineWidth = 2;
+      this.ctx.rect(x, y, this.markerImg.width, this.markerImg.height);
+      // this.ctx.stroke();
+      this.ctx.fillStyle = 'red';
+      this.ctx.fill();
     },
 
     //네이버 마커 삭제
     clearMarker(){
+
+      const t = performance.now()
 
       //this.ctx.fillStyle = 'rgb(31, 196, 73, 0.2)'
       this.ctx.clearRect(Math.min(this.lastLeft, 0), Math.min(this.lastTop, 0), this.canSize.width + Math.abs(this.lastLeft), this.canSize.height + Math.abs(this.lastTop))
@@ -256,6 +304,9 @@ export default {
       for(let mark of list){
         mark.setMap(null)
       }
+      
+      this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(clearMarker)`, this.time(t, true))
+
     },
 
     //이미지 로드
@@ -269,7 +320,25 @@ export default {
     //랜덤 생성 utils
     type(){return Math.random() > 0.5?'-':''},
     ran(){
+      return this.ranLarge()
+    },
+    ranLarge(){
+      return Number(Math.random() * (Math.random() * Math.random() + Math.random())).toFixed(6)
+    },
+    ranSmall(){
       return Number(Math.random() * (Math.random() * 0.1)).toFixed(6)
+    },
+
+    //로그
+    log(){
+      this.$log(...arguments)
+    },
+    //시간
+    time(t, sec){
+      let c = performance.now() - t
+      return sec
+      ?(c / 1000).toFixed(3) + ' 초'
+      :c.toFixed(0) + ' ms'
     },
 
   }
