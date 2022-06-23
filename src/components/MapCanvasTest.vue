@@ -330,7 +330,7 @@ export default {
         }
 
         this.markerImg.circle
-        ?this.drawCircle(x, y)
+        ?this.drawRect(x, y)
         :this.ctx.drawImage(
             this.markerImg, 
             x,
