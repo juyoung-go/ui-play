@@ -41,7 +41,7 @@ export default {
   },
   mapZoomChanged(){
     console.log('zoom changed', arguments);
-    this.drawMarker2()
+    this.drawMarker2(true)
   },
   mapCenterChanged(coord){
     if(this.isMoving){
@@ -83,7 +83,7 @@ export default {
     if(this.mode == 'canvas'){
       this.clearMarker()
       this.ctx.translate(trans.x, trans.y)
-      this.drawMarker2()
+      this.drawMarker2(true)
     }
     
   },

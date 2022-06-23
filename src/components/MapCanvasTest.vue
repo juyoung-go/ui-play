@@ -294,7 +294,7 @@ export default {
     },
 
     //마커 그리기 - 캔버스
-    drawMarker2(){
+    drawMarker2(recalc){
 
       //센터점 찍기
       // this.ctx.fillStyle = 'rgb(31, 196, 73)'
@@ -310,10 +310,20 @@ export default {
       let x, y
       for(let marker of this.markerData){
 
-        tempCoord = this.getCoordToOffset(marker.x,marker.y)
+        if(recalc || !marker.canx){
 
-        x = Math.floor(tempCoord.x + scaleWidth) + 0.5
-        y = Math.floor(tempCoord.y + scaleHeight) + 0.5
+          tempCoord = this.getCoordToOffset(marker.x,marker.y)
+  
+          x = Math.floor(tempCoord.x + scaleWidth) + 0.5
+          y = Math.floor(tempCoord.y + scaleHeight) + 0.5
+
+          marker.canx = x
+          marker.cany = y
+
+        }else{
+          x = marker.canx
+          y = marker.cany
+        }
 
         if(x < this.lastLeft || y < this.lastTop || x > this.canSize.width - this.markerImg.width || y > this.canSize.height - this.markerImg.height){
           continue
