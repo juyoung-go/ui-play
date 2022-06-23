@@ -97,13 +97,20 @@ export default {
     go(name){
       const t = performance.now()
       this[name](...this.argumentsShift(...arguments))
-      this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(${name})`, (performance.now() - t).toFixed(0) + ' ms')
+      this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(${name})`, this.time(t, true))
     },
 
     async goAsync(name){
       const t = performance.now()
       await this[name](...this.argumentsShift(...arguments))
-      this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(${name})`, (performance.now() - t).toFixed(0) + ' ms')
+      this.log(`[${this.mode}]`,`[${this.cnt} 개]`,`(${name})`, this.time(t, true))
+    },
+
+    time(t, sec){
+      let c = performance.now() - t
+      return sec
+      ?(c / 1000).toFixed(3) + ' 초'
+      :c.toFixed(0) + ' ms'
     },
 
     argumentsShift(){
@@ -259,7 +266,7 @@ export default {
       //지도 생성
       this.map = new google.maps.Map(this.$refs.root, {
         center: new google.maps.LatLng(this.x, this.y),
-        zoom: 14,
+        zoom: 15,
       })
 
       //마커 데이터
@@ -312,7 +319,7 @@ export default {
 
     //로그
     log(){
-      console.log('[Map Log]', ...arguments)
+      this.$log(...arguments)
     }
 
   }

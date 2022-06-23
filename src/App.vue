@@ -11,23 +11,33 @@
       </div>
       <div></div>
     </div>
-    <component v-if="comName" :is="$options.components[comName]" style="height:calc(100% - 40px);"></component>
+    <component v-if="comName" :is="$options.components[comName]" style="height:calc(100% - 340px);"></component>
+    <div style="position:absolute;z-index:10;width:100%;height:300px;border:0px solid red;top:calc(100% - 300px);overflow:auto;padding:20px 30px;
+    display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;
+    font-weight:600;font-size:16px;">
+      <template v-for="(m, i) in msg">
+        <div :key="i+'-'+m.id" :style="'display:flex;width:100%;transition:opacity 1s,left 1s;text-align:left;'+m.style">
+          {{m.head}}<div style="margin-left:5px;color:red;">{{m.body}}</div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 
 import PagingTest from './components/PagingTest.vue'
 import MapTest from './components/MapTest.vue'
 import DashboardTest from './components/DashboardTest.vue'
 import MapComponentTest from './components/MapComponentTest.vue'
-import MapMarkerTest from './components/MapMarkerTest.vue'
+import MapMarkerNaverTest from './components/MapMarkerNaverTest.vue'
 import MapMarkerKakaoTest from './components/MapMarkerKakaoTest.vue'
 import MapMarkerGoogleTest from './components/MapMarkerGoogleTest.vue'
 export default {
   name: 'App',
   components:{
-    PagingTest, MapTest, DashboardTest, MapComponentTest, MapMarkerTest, MapMarkerKakaoTest, MapMarkerGoogleTest
+    PagingTest, MapTest, DashboardTest, MapComponentTest, MapMarkerNaverTest, MapMarkerKakaoTest, MapMarkerGoogleTest
   },
   created(){
     
@@ -41,11 +51,77 @@ export default {
       }
       this.comList.push({label:name, value:name})
     }
+
+    //메시지 처리기
+    Vue.prototype.$message = this.msg
+    Vue.prototype.$getTime = this.getTime
+    let idval = 0
+    Vue.prototype.$log = function(){
+      let head = `[${Vue.prototype.$getTime()}] [Log]`
+      let body = ''
+      for(let i = 0 ; i < arguments.length ; i++){
+        body += ' ' + arguments[i]
+      }
+      Vue.prototype.$message.push({
+        title:'[Log]',
+        head:head,
+        body:body,
+        time:new Date().getTime(),
+        style:'opacity:1;',
+        id:idval++
+      })
+      console.log('[Log]', ...arguments)
+    }
+
+    let targets = []
+    this.inter = window.setInterval(()=>{
+
+      if(this.$message.length > 0){
+
+        targets.length = 0
+        let time = new Date().getTime()
+        
+        for(let msg of this.$message){
+          if(time - msg.time > 10000){
+            targets.push(msg)
+          }else if(!msg.willDie && time - msg.time > 9000){
+            msg.style = 'opacity:0;'
+            msg.willDie = true
+          }
+        }
+
+        for(let t of targets){
+          this.$message.splice(this.$message.indexOf(t), 1)
+        }
+
+      }
+
+    }, 10)
+
+  },
+  beforeDestroy(){
+    this.inter && window.clearInterval(this.inter)
   },
   data(){
     return {
+      msg:[],
       comList:[],
-      comName:'MapMarkerGoogleTest',
+      comName:'MapMarkerNaverTest',
+    }
+  },
+  methods:{
+    getTime(){
+      const date = new Date()
+      const yyyy = date.getFullYear()
+      const mm = date.getMonth() + 1
+      const dd = date.getDate()
+      const hh = date.getHours()
+      const mi = date.getMinutes()
+      const ss = date.getSeconds()
+      return `${yyyy}-${this.pad(mm)}-${this.pad(dd)} ${this.pad(hh)}:${this.pad(mi)}:${this.pad(ss)}`
+    },
+    pad(num){
+      return num>9?num:'0'+num
     }
   }
 }
