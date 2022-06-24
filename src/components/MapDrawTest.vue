@@ -1,5 +1,5 @@
 <template>
-  <div style="padding:0px 40px;">
+  <div style="padding:0px 20px;">
     <nav style="padding:10px;">
       <button @click="clearOv">오버레이 클리어</button><button @click="drawOv">오버레이 다시그리기</button><button @click="moveTo(map, paths)">오버레이 패닝</button>
       <button @click="clear">캔버스 클리어</button><button @click="draw">캔버스 다시그리기</button>

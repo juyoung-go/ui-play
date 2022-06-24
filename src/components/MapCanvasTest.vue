@@ -1,5 +1,5 @@
 <template>
-  <div style="padding:0px 40px;">
+  <div style="padding:0px 20px;">
     <nav style="padding:10px;">
       <input style="width:calc(100% - 500px);" type="range" v-model="cnt" max="500000" @change="refreshMarkerData()"><span>{{cnt+' 개'}}</span>
       <select v-model="mode" style="margin:0px 5px;" @change="drawMarker()">

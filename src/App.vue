@@ -23,7 +23,7 @@
     <!-- 로그 -->
     <div style="position:absolute;z-index:10;width:100%;height:300px;border:0px solid red;top:calc(100% - 300px);overflow:auto;padding:20px 30px;
     display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;
-    font-weight:600;font-size:16px;">
+    font-weight:600;font-size:20px;">
       <template v-for="(m, i) in msg">
         <div :key="i+'-'+m.id" :style="'display:flex;width:100%;transition:opacity 1s,left 1s;text-align:left;'+m.style">
           {{m.head}}<div style="margin-left:5px;color:red;">{{m.body}}</div>

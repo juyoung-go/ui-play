@@ -1,5 +1,5 @@
 <template>
-  <div style="padding:0px 100px;">
+  <div style="padding:0px 20px;">
     <nav style="display: flex;align-items: center;padding:10px;">
       <input style="width:calc(100% - 350px);" type="range" v-model="cnt" max="2000" @change="go('refreshMarkerData');go('redraw')"><span>{{cnt+' 개'}}</span>
       <select v-model="mode" style="margin:0px 20px;" @change="go('redraw')">
@@ -85,7 +85,7 @@ export default {
       //이벤트 해제
       this.removeMapEvents()
 
-      this.map.destroy()
+      //this.map.destroy()
 
       //pool 객체 삭제
       this.pool.destroy()
