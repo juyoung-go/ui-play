@@ -27,4 +27,4 @@ jobs:
     
     # Runs a single command using the runners shell
     - name: check java version
-      run: echo "java -version"
+      run: java -version
