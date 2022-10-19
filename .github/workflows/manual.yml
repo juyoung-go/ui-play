@@ -21,9 +21,9 @@ jobs:
     - name: Setup JDK
       uses: actions/setup-java@v3.6.0
       with: 
-        java-version: '11'
         distribution: 'corretto'
-        java-package: 'jre'
+        java-version: '11'
+        java-package: jre
     
     # Runs a single command using the runners shell
     - name: check java version
