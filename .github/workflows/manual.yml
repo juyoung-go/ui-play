@@ -40,4 +40,4 @@ jobs:
       run: export PATH=$PATH:~/sonar-scanner-4.7.0.2747/bin
       
     - name: start sonar scanner
-      run: sonar-scanner
+      run: sh sonar-scanner
