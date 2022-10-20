@@ -42,3 +42,6 @@ jobs:
       
     - name: start sonar scanner
       run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url=http://34.64.90.204:9000 -Dsonar.login=sqp_683d5cf5450b648efefe6f49355abfc10c90ab4e -Dsonar.analysis.runNumber='${{github.run_id}}-${{github.run_number}}'
+      
+    - name: get sonar result
+      run: curl http://34.64.211.101:5252/sonar/${{github.run_id}}-${{github.run_number}}
