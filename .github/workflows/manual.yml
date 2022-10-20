@@ -36,5 +36,8 @@ jobs:
     - name: unzip sonar scanner
       run: unzip sonar-scanner-cli-4.7.0.2747.zip
       
+    - name: path setting
+      run: export PATH=$PATH:~/sonar-scanner-4.7.0.2747/bin
+      
     - name: start sonar scanner
-      run: sh sonar-scanner-cli-4.7.0.2747/bin/sonar-scanner
+      run: sonar-scanner
