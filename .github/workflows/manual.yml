@@ -20,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: SONAR
     env:
-      sonarResult: NO_RESULT
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       SONAR_LOGIN_UI_PLAY: ${{ secrets.SONAR_LOGIN_UI_PLAY }}
       sonarJobId: ${{github.run_id}}-${{github.run_number}}
@@ -54,7 +53,7 @@ jobs:
         echo "JSON_RESPONSE=$JSON_RESPONSE" >> $GITHUB_ENV
       
     - name: Check sonar result
-      run: echo "result => $sonarResult"
+      run: echo "result => ${{env.JSON_RESPONSE}}"
     
     - name: Add sonar result comment
       uses: actions/github-script@v5
