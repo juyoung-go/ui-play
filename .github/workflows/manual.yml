@@ -37,4 +37,4 @@ jobs:
       run: unzip sonar-scanner-cli-4.7.0.2747.zip
       
     - name: start sonar scanner
-      run: sh sonar-scanner-cli-4.7.0.2747.zip/bin/sonar-scanner
+      run: sh sonar-scanner-cli-4.7.0.2747/bin/sonar-scanner
