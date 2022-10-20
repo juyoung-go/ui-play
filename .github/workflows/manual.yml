@@ -16,6 +16,7 @@ jobs:
   
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    environment: SONAR
     env:
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       SONAR_LOGIN_UI_PLAY: ${{ secrets.SONAR_LOGIN_UI_PLAY }}
