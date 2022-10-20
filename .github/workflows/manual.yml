@@ -49,7 +49,7 @@ jobs:
       run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.login="$SONAR_LOGIN_UI_PLAY" -Dsonar.analysis.runNumber="$sonarJobId"
       
     - name: Get sonar result
-      run: curl "http://34.64.211.101:5252/sonar/$sonarJobId" >> "$sonarResult"
+      run: curl "http://34.64.211.101:5252/sonar/$sonarJobId" >> ${{env.sonarResult}}
       
     - name: Check sonar result
       run: echo "result => $sonarResult"
