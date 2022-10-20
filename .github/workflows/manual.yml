@@ -19,8 +19,6 @@ jobs:
     env:
       sonarJobId: ${{github.run_id}}-${{github.run_number}}
       
-    environment: $SONAR
-    
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v3
@@ -42,7 +40,7 @@ jobs:
       run: echo "$sonarJobId"
       
     - name: Start sonar scanner
-      run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url=http://34.64.90.204:9000 -Dsonar.login=sqp_683d5cf5450b648efefe6f49355abfc10c90ab4e -Dsonar.analysis.runNumber='$sonarJobId'
+      run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN_UI_PLAY }} -Dsonar.analysis.runNumber='$sonarJobId'
       
     - name: Get sonar result
       run: curl http://34.64.211.101:5252/sonar/$sonarJobId
