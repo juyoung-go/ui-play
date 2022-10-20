@@ -54,8 +54,7 @@ jobs:
     - name: Check sonar result
       run: echo "result => $sonarResult"
     
-    - name: Add sonar result comment 
-      if: ${{sonarResult}} != 'OK'
+    - name: Add sonar result comment
       uses: actions/github-script@v5
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
