@@ -30,5 +30,11 @@ jobs:
       run: java -version
       
     # Setup Sonar-Scanner
-    - name: setup sonar scanner
+    - name: download sonar scanner
       run: wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747.zip
+      
+    - name: unzip sonar scanner
+      run: unzip sonar-scanner-cli-4.7.0.2747.zip
+      
+    - name: start sonar scanner
+      run: sh sonar-scanner-cli-4.7.0.2747.zip/bin/sonar-scanner
