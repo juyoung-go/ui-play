@@ -21,7 +21,7 @@
     <component v-if="comName" :is="$options.components[comName]" style="height:calc(100% - 380px);"></component>
 
     <!-- 로그 -->
-    <div style="position:absolute;z-index:10;width:100%;height:300px;border:0px solid red;top:calc(100% - 300px);overflow:auto;padding:20px 30px;
+    <div style="position:absolute;z-index:10;width:100%;height:300px;border:0px solid red;top:calc(100% - 300px);padding:20px 30px;
     display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;
     font-weight:600;font-size:20px;">
       <template v-for="(m, i) in msg">
@@ -54,7 +54,7 @@ export default {
     //MapDrawTest
   },
   created(){
-    1 == 1
+    
     let names = Object.getOwnPropertyNames(this.$options.components)
     let comp
     let coms = []
