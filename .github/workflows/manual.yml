@@ -13,14 +13,18 @@ on:
 jobs:
   # This workflow contains a single job called "greet"
   sonarscanner:
+  
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
-      jobId: '${{github.run_id}}-${{github.run_number}}'
+      sonarJobId: ${{github.run_id}}-${{github.run_number}}
+      
+    environment: $SONAR
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v3
+    
     - name: Setup JDK
       uses: actions/setup-java@v3.6.0
       with: 
@@ -28,20 +32,17 @@ jobs:
         java-version: '11'
         java-package: jre
     
-    - name: check java version
-      run: java -version
-    
-    - name: download sonar scanner
+    - name: Download sonar scanner
       run: wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747.zip
       
-    - name: unzip sonar scanner
+    - name: Unzip sonar scanner
       run: unzip sonar-scanner-cli-4.7.0.2747.zip
       
-    - name: check job Id
-      run: echo '$jobId'
+    - name: Check Sonar Job Id
+      run: echo "$sonarJobId"
       
-    #- name: start sonar scanner
+    #- name: Start sonar scanner
     #  run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url=http://34.64.90.204:9000 -Dsonar.login=sqp_683d5cf5450b648efefe6f49355abfc10c90ab4e -Dsonar.analysis.runNumber='${{github.run_id}}-${{github.run_number}}'
       
-    #- name: get sonar result
+    #- name: Get sonar result
     #  run: curl http://34.64.211.101:5252/sonar/${{github.run_id}}-${{github.run_number}}
