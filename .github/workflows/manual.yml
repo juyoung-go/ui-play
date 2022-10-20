@@ -37,8 +37,19 @@ jobs:
     - name: unzip sonar scanner
       run: unzip sonar-scanner-cli-4.7.0.2747.zip
       
-    - name: check file list
-      run: ls -la
+    - name: Dump GitHub context
+      id: github_context_step
+      run: echo '${{ toJSON(github) }}'
+    - name: Dump job context
+      run: echo '${{ toJSON(job) }}'
+    - name: Dump steps context
+      run: echo '${{ toJSON(steps) }}'
+    - name: Dump runner context
+      run: echo '${{ toJSON(runner) }}'
+    - name: Dump strategy context
+      run: echo '${{ toJSON(strategy) }}'
+    - name: Dump matrix context
+      run: echo '${{ toJSON(matrix) }}'
       
-    - name: start sonar scanner
-      run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url=http://34.64.90.204:9000 -Dsonar.login=sqp_683d5cf5450b648efefe6f49355abfc10c90ab4e -Dsonar.sources=ui-play
+    #- name: start sonar scanner
+    #  run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url=http://34.64.90.204:9000 -Dsonar.login=sqp_683d5cf5450b648efefe6f49355abfc10c90ab4e -Dsonar.analysis.buildNumber=github.run_id
