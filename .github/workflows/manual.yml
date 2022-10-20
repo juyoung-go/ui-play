@@ -54,15 +54,15 @@ jobs:
     - name: Check sonar result
       run: echo "result => $sonarResult"
     
-    #- name: Add sonar result comment 
-    #  if: contains(github.event.comment.body, '/deploy')
-    #  uses: actions/github-script@v5
-    #  with:
-    #    github-token: ${{secrets.GITHUB_TOKEN}}
-    #    script: |
-    #      github.rest.issues.createComment({
-    #        issue_number: context.issue.number,
-    #        owner: context.repo.owner,
-    #        repo: context.repo.repo,
-    #        body: ''
-    #      })
+    - name: Add sonar result comment 
+      if: $sonarResult != "OK"
+      uses: actions/github-script@v5
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '$sonarResult'
+          })
