@@ -15,10 +15,12 @@ jobs:
   sonarscanner:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      jobId: '${{github.run_id}}-${{github.run_number}}'
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
     - name: Setup JDK
       uses: actions/setup-java@v3.6.0
       with: 
@@ -26,22 +28,20 @@ jobs:
         java-version: '11'
         java-package: jre
     
-    # Runs a single command using the runners shell
     - name: check java version
       run: java -version
-      
-    # Setup Sonar-Scanner
+    
     - name: download sonar scanner
       run: wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747.zip
       
     - name: unzip sonar scanner
       run: unzip sonar-scanner-cli-4.7.0.2747.zip
       
-    - name: Dump GitHub context
-      run: echo 'scanner job id => ${{github.run_id}}-${{github.run_number}}'
+    - name: check job Id
+      run: echo '$jobId'
       
-    - name: start sonar scanner
-      run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url=http://34.64.90.204:9000 -Dsonar.login=sqp_683d5cf5450b648efefe6f49355abfc10c90ab4e -Dsonar.analysis.runNumber='${{github.run_id}}-${{github.run_number}}'
+    #- name: start sonar scanner
+    #  run: sonar-scanner-4.7.0.2747/bin/sonar-scanner -Dsonar.projectKey=ui-play -Dsonar.host.url=http://34.64.90.204:9000 -Dsonar.login=sqp_683d5cf5450b648efefe6f49355abfc10c90ab4e -Dsonar.analysis.runNumber='${{github.run_id}}-${{github.run_number}}'
       
-    - name: get sonar result
-      run: curl http://34.64.211.101:5252/sonar/${{github.run_id}}-${{github.run_number}}
+    #- name: get sonar result
+    #  run: curl http://34.64.211.101:5252/sonar/${{github.run_id}}-${{github.run_number}}
