@@ -28,3 +28,7 @@ jobs:
     # Runs a single command using the runners shell
     - name: check java version
       run: java -version
+      
+    # Setup Sonar-Scanner
+    - name: setup sonar scanner
+      run: wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747.zip
