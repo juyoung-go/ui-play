@@ -50,9 +50,8 @@ jobs:
       
     - name: Get sonar result
       run: |
-        echo 'JSON_RESPONSE<<EOF' >> $GITHUB_ENV
-        curl "http://34.64.211.101:5252/sonar/$sonarJobId" >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
+        JSON_RESPONSE=$(curl "http://34.64.211.101:5252/sonar/$sonarJobId")
+        echo "JSON_RESPONSE=$JSON_RESPONSE" >> $GITHUB_ENV
       
     - name: Check sonar result
       run: echo "result => $sonarResult"
