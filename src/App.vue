@@ -54,7 +54,7 @@ export default {
     //MapDrawTest
   },
   created(){
-    1 == 1
+    
     let names = Object.getOwnPropertyNames(this.$options.components)
     let comp
     let coms = []
