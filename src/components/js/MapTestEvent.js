@@ -83,7 +83,7 @@ export default {
     if(this.mode == 'canvas'){
       this.clearMarker()
       this.ctx.translate(trans.x, trans.y)
-      this.drawMarker2(true)
+      this.drawMarker2()
     }
     
   },
